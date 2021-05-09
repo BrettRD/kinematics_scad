@@ -16,21 +16,15 @@ function identity(n) = [for(i=[0:n-1]) [for(j=[0:n-1]) i==j?1:0 ]];
 function zip(a,b, i=0, out=[]) = i>=len(a) ? out : i>=len(b) ? out : zip(a,b,i=i+1, out=concat(out, [a[i],b[i]]));
 
 // insert the motor poses into the kinematic chain
-// XXX this can be shortened and generalised
 function fk_linalg_list(chain, pose) =
+assert(pose!=undef)
+assert(len(chain[0]) == 1+len(chain[1]) )
 let(
     links = chain[0],
     axes = chain[1],
-    n_axes = len(axes)
-) [
-    links[0],
-    rotation(axis = axes[0] * pose[0]),
-    links[1],
-    rotation(axis = axes[1] * pose[1]),
-    links[2],
-    rotation(axis = axes[2] * pose[2]),
-    links[3],
-];
+    n_axes = len(axes),
+    axes_tf = [for(i=[0:n_axes-1]) rotation(axis = axes[i] * pose[i])]
+) concat( zip(links, axes_tf) , [links[n_axes]]);
 
 // convert kinematic chains down to a single transformation matrix
 function fk_flatten_chain( FKl, M = identity4()) = len(FKl) == 0 ? M : fk_flatten_chain(remove(FKl,0), M*FKl[0]);
