@@ -1,4 +1,5 @@
 use <dragon_claw.scad>
+use <forward_kinematics.scad>
 
 contact_rad = 70;
 contact_height=90;
@@ -20,7 +21,7 @@ function target_point(i,t) = let(
     z = contact_height+step_height*step(t+i/n_points)
     ) [x,y,z];
 
-function pose(i,t) = ik_search(i=i, dst=target_point(i,t), pose=[0,0,0]);
+function pose(chain,dst) = ik_search(chain=chain, dst=dst, margin=0.05, pose=[0,0,0]);
 
 
 
@@ -31,10 +32,12 @@ function pose(i,t) = ik_search(i=i, dst=target_point(i,t), pose=[0,0,0]);
 
 //for(i=[0:4]) {
 //    %translate(target_point(i,$t)) sphere(d=5);
-//    color("red")   fk_linalg_marker(i=i,pose=pose(i,$t));
+//    color("red")   fk_linalg_marker(chain=claw_kinematic_chains()[i],pose=pose(chain=claw_kinematic_chains()[i],dst=target_point(i,$t)));
 //}
 
-assembly( [for(i=[0:n_points-1])pose(i,$t)] );
+target_points = [for(i=[0:n_points-1]) target_point(i,$t)];
+claw_pose = [for(i=[0:n_points-1])pose(chain=claw_kinematic_chains()[i], dst=target_points[i])];
+assembly( claw_pose );
 //assembly([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
 
 

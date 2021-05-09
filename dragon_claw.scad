@@ -109,7 +109,20 @@ module fk_native(
     children();
 }
 
-kinematic_chains = [ for(i=[0:n_claws-1])
+
+module fk_native_marker( i=0,
+    pose = [0,0,0]){
+    fk_native(
+        i,
+        pose
+        )sphere(d=5);
+}
+
+
+
+
+
+function claw_kinematic_chains() = [ for(i=[0:n_claws-1])
     [
         //links
         [
@@ -138,121 +151,33 @@ kinematic_chains = [ for(i=[0:n_claws-1])
 ];
 
 
-function fk_linalg_list(
-    i,
-    pose
-) = [
-    translation(knuckle_motor_pos[i][0]) *
-    rotation(knuckle_motor_pos[i][1]) *
-    translation(mg90s_shaft_pos()),
-
-    rotation(axis = (mg90s_shaft_axis() * pose[0])),
-
-    translation(finger_motor_pos[i][0])*
-    rotation(finger_motor_pos[i][1]),
-
-    rotation(axis = (-mg90s_shaft_axis() * pose[1])),
-
-    translation(-mg90s_shaft_pos()) *
-    translation(claw_motor_pos[i][0]) *
-    rotation(claw_motor_pos[i][1]) ,
-
-    rotation(axis = (-mg90s_shaft_axis() * pose[2])),
-
-    translation(-mg90s_shaft_pos()) *
-    translation(claw_point_pos[i][0]) *
-    rotation(claw_point_pos[i][1])
-    ];
-
-module fk_native_marker( i=0,
-    pose = [0,0,0]){
-    fk_native(
-        i,
-        pose
-        )sphere(d=5);
-}
-
-function fk_linalg_mat(
-    i,
-    pose
-) = forward_kinematics_linalg_mat(
-    fk_linalg_list(
-        i,
-        pose
-    )
-);
-
-function fk_linalg_point(
-    i,
-    pose
-) = transform(
-    fk_linalg_mat(
-        i,
-        pose
-    ),
-    [[0,0,0]]
-)[0];
-
-module fk_linalg_marker(i=0,
-    pose = [0,0,0]){
-    translate(
-        fk_linalg_point(
-            i,
-            pose
-        )
-    ) sphere(d=5);
-}
-
-function fk_jacobian (i, delta, pose) = [for(d = [[1,0,0],[0,1,0],[0,0,1]]) 
-    (fk_linalg_point(i, pose + delta*d) - 
-    fk_linalg_point(i, pose ))/delta
-];
-
-
-function ik_search(i, dst, step=0.8, margin=0.1, recursion_limit=20, pose) =
-    recursion_limit == 0 ?
-        echo("ik recursion limit reached")
-        pose :
-        let(
-            err =  dst-fk_linalg_point(i, pose) ,
-            dir =  err*matrix_invert(fk_jacobian(i,0.1, pose)),
-            next_pose = pose + step*dir
-        ) norm(err) < margin ?
-            next_pose :
-            ik_search(i=i, dst=dst, step=step, margin=margin, recursion_limit=recursion_limit-1, pose=next_pose);
-
-
-
 //%translate([0,0,150])sphere(r=100);
 
 
 
-echo(fk_jacobian(0,0.1, [0,0,0]));  //jacobian
-echo(matrix_invert(fk_jacobian(0,0.1, [0,0,0]))); //inverse jacobain
-echo(fk_jacobian(0,0.1, [0,0,0])*matrix_invert(fk_jacobian(0,0.1, [0,0,0]))); //identity
+echo(fk_jacobian(chain=claw_kinematic_chains()[0], delta=0.1, pose=[0,0,0]));  //jacobian
+echo(matrix_invert(fk_jacobian(chain=claw_kinematic_chains()[0], delta=0.1, pose=[0,0,0]))); //inverse jacobain
+echo(fk_jacobian(chain=claw_kinematic_chains()[0], delta=0.1, pose=[0,0,0])*matrix_invert(fk_jacobian(chain=claw_kinematic_chains()[0], delta=0.1, pose=[0,0,0]))); //identity
 
 
 dst = [0,-50,100];
 starting_pose = [0,0,0];
 i=0;
-//echo(ik_search(i=i, dst=dst, pose=starting_pose));
-//echo(fk_linalg_point(i=i,ik_search(i=0, dst=dst, pose=starting_pose)));
+//echo(ik_search(chain=claw_kinematic_chains()[i], dst=dst, pose=starting_pose));
+//echo(fk_linalg_point(chain=claw_kinematic_chains()[i],ik_search(chain=claw_kinematic_chains()[i], dst=dst, pose=starting_pose)));
 
-//fk_native_marker(0, [0,0,0]);
-//fk_linalg_marker(0,starting_pose);
-fk_linalg_marker(0, ik_search(i=0, dst=dst, pose=starting_pose));
+//fk_linalg_marker(chain=claw_kinematic_chains()[i],pose=starting_pose);
+fk_linalg_marker(chain=claw_kinematic_chains()[0], pose=ik_search(chain=claw_kinematic_chains()[0], dst=dst, pose=starting_pose));
 translate(dst)color("blue")sphere(d=5);
 
 
 assembly([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
 
 /*
+//layout of components
 palm_part(knuckle_motor_pos);
-
 for(i=[0:n_claws-1]) translate([-100, 50 *i,0]) knuckle_part(i, finger_motor_pos);
-
 for(i=[0:n_claws-1]) translate([-150, 50 *i,0]) finger_part(i, claw_motor_pos);
-
 for(i=[0:n_claws-1]) translate([-250, 50 *i,0]) claw_part(i);
 */
 
