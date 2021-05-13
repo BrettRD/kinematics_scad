@@ -16,11 +16,11 @@ shaft_comp=mg90s_shaft_pos()[2];
 
 //positions and orientations of the knuckle motors relative to the palm origin
 knuckle_motor_pos = [
-    [[-10,-35,0], [90, -90, -10]],
-    [[ 40, 10,0], [90, -90, 115]],
-    [[ 20, 35,0], [90, -90, 160]],
-    [[-20, 35,0], [90, -90, 200]],
-    [[-40, 10,0], [90, -90, 245]]
+    [[ 10,-35,-15], [0, -60, 100]],
+    [[ 40, 10,-5], [0, -90, 205]],
+    [[ 20, 35,-10], [0, -90, 250]],
+    [[-20, 35,-5], [0, -90, 290]],
+    [[-40, 10, 0], [0, -90, 335]]
     ];
 
 
@@ -35,19 +35,19 @@ finger_motor_pos = [
 ];
 
 claw_motor_pos = [
+    [[-38,0,shaft_comp],[0,0,-60]],
+    [[-36,0,shaft_comp],[0,0,-60]],
     [[-40,0,shaft_comp],[0,0,-60]],
-    [[-40,0,shaft_comp],[0,0,-60]],
-    [[-40,0,shaft_comp],[0,0,-60]],
-    [[-40,0,shaft_comp],[0,0,-60]],
-    [[-40,0,shaft_comp],[0,0,-60]],
+    [[-36,0,shaft_comp],[0,0,-60]],
+    [[-32,0,shaft_comp],[0,0,-60]],
 ];
 
 claw_point_pos = [
-    [[-60,0,0],[0,0,0]],
-    [[-60,0,0],[0,0,0]],
-    [[-60,0,0],[0,0,0]],
-    [[-60,0,0],[0,0,0]],
-    [[-60,0,0],[0,0,0]],
+    [[-42,0,0],[0,0,0]],
+    [[-50,0,0],[0,0,0]],
+    [[-55,0,0],[0,0,0]],
+    [[-50,0,0],[0,0,0]],
+    [[-45,0,0],[0,0,0]],
 ];
 
 module assembly(pose = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]){
@@ -121,7 +121,7 @@ module fk_native_marker( i=0,
 
 
 
-
+// describe the kinematic chain for each finger as 4x4 transformation matrices and rotation axis vectors for each motor
 function claw_kinematic_chains() = [ for(i=[0:n_claws-1])
     [
         //links
@@ -129,14 +129,14 @@ function claw_kinematic_chains() = [ for(i=[0:n_claws-1])
             translation(knuckle_motor_pos[i][0]) *
             rotation(knuckle_motor_pos[i][1]) *
             translation(mg90s_shaft_pos()),
-            //rotation with pose[0]
+            //rotation with pose[0] gets inserted here
             translation(finger_motor_pos[i][0])*
             rotation(finger_motor_pos[i][1]),
-            //rotation with pose[1]
+            //rotation with pose[1] gets inserted here
             translation(-mg90s_shaft_pos()) *
             translation(claw_motor_pos[i][0]) *
             rotation(claw_motor_pos[i][1]) ,
-            //rotation with pose[2]
+            //rotation with pose[2] gets inserted here
             translation(-mg90s_shaft_pos()) *
             translation(claw_point_pos[i][0]) *
             rotation(claw_point_pos[i][1])
