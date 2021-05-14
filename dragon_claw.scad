@@ -27,11 +27,11 @@ knuckle_motor_pos = [
 //positions and orientations of the finger motor shaft relative to the respective knuckle motor shaft
 
 finger_motor_pos = [
-    [[0,-shaft_comp,20],[90,140,0]],
-    [[0,-shaft_comp,20],[90,140,0]],
-    [[0,-shaft_comp,20],[90,140,0]],
-    [[0,-shaft_comp,20],[90,140,0]],
-    [[0,-shaft_comp,20],[90,140,0]],
+    [[10,-shaft_comp,26],[90,140,0]],
+    [[10,-shaft_comp,26],[90,140,0]],
+    [[10,-shaft_comp,26],[90,140,0]],
+    [[10,-shaft_comp,26],[90,140,0]],
+    [[10,-shaft_comp,26],[90,140,0]],
 ];
 
 claw_motor_pos = [
@@ -151,32 +151,21 @@ function claw_kinematic_chains() = [ for(i=[0:n_claws-1])
 ];
 
 
-//%translate([0,0,150])sphere(r=100);
-
-
-
-echo(fk_jacobian(chain=claw_kinematic_chains()[0], delta=0.1, pose=[0,0,0]));  //jacobian
-echo(matrix_invert(fk_jacobian(chain=claw_kinematic_chains()[0], delta=0.1, pose=[0,0,0]))); //inverse jacobain
-echo(fk_jacobian(chain=claw_kinematic_chains()[0], delta=0.1, pose=[0,0,0])*matrix_invert(fk_jacobian(chain=claw_kinematic_chains()[0], delta=0.1, pose=[0,0,0]))); //identity
-
-
-dst = [0,-50,100];
-starting_pose = [0,0,0];
-i=0;
-//echo(ik_search(chain=claw_kinematic_chains()[i], dst=dst, pose=starting_pose));
-//echo(fk_linalg_point(chain=claw_kinematic_chains()[i],ik_search(chain=claw_kinematic_chains()[i], dst=dst, pose=starting_pose)));
-
-//fk_linalg_marker(chain=claw_kinematic_chains()[i],pose=starting_pose);
-fk_linalg_marker(chain=claw_kinematic_chains()[0], pose=ik_search(chain=claw_kinematic_chains()[0], dst=dst, pose=starting_pose));
-translate(dst)color("blue")sphere(d=5);
 
 
 assembly([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
+//mg90s();
+//mg90s_wire_channel();
 
+/*
+for(i=[0:n_claws-1]) translate([-100, 50 *i,0]) {
+    knuckle_part(i, finger_motor_pos);
+    translate(-mg90s_shaft_pos())%mg90s();
+}
+*/
 /*
 //layout of components
 palm_part(knuckle_motor_pos);
-for(i=[0:n_claws-1]) translate([-100, 50 *i,0]) knuckle_part(i, finger_motor_pos);
 for(i=[0:n_claws-1]) translate([-150, 50 *i,0]) finger_part(i, claw_motor_pos);
 for(i=[0:n_claws-1]) translate([-250, 50 *i,0]) claw_part(i);
 */
