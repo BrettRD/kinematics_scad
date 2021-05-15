@@ -1,8 +1,9 @@
 use <dragon_claw.scad>
 use <forward_kinematics.scad>
 
-contact_rad = 60;
-contact_centre = [-10,20,80];
+sphere_rad = 90;
+contact_rad = 70;
+contact_centre = [0,20,90];
 step_height = -10;
 n_points = 5;
 step_size = (0.5) * 360/n_points;
@@ -27,7 +28,6 @@ function pose(chain,dst) = ik_search(chain=chain, dst=dst, margin=0.05, pose=[0,
 
 //describes the orientation of the held object
 function ring_angle(t) = -t*step_size;
-sphere_rad = 80;
 sphere_height = sqrt(sphere_rad*sphere_rad - contact_rad*contact_rad);
 translate(contact_centre + [0,0,1]*sphere_height)
     rotate([0,0,ring_angle($t)])
@@ -44,6 +44,7 @@ translate(contact_centre + [0,0,1]*sphere_height)
 
 target_points = [for(i=[0:n_points-1]) target_point(i,$t)];
 claw_pose = [for(i=[0:n_points-1])pose(chain=claw_kinematic_chains()[i], dst=target_points[i])];
+echo("pose:",claw_pose);
 assembly( claw_pose );
 //assembly([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
 

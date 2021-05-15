@@ -66,12 +66,21 @@ function mg90s_wire_pos(
 module mg90s_wire_stub(wire_thickness=wire_thickness){
     translate(mg90s_wire_pos(wire_thickness=wire_thickness))cube([wire_thickness, wire_width, wire_thickness], center=true);
 }
-module mg90s_wire_channel(wire_thickness=wire_thickness, clearance=0.2){
+module mg90s_wire_channel(wire_thickness=wire_thickness, clearance=0.2, wrap_under=false){
     minkowski(){
         sphere(r=clearance);
-        hull(){
-            translate([0,0,-wire_drop])mg90s_wire_stub();
-            translate([0,0,body_height - wire_drop])mg90s_wire_stub();
+        union(){
+            hull(){
+                translate([0,0,-wire_drop])mg90s_wire_stub();
+                translate([0,0,body_height - wire_drop])mg90s_wire_stub();
+            }
+            if(wrap_under)
+            {
+                hull(){
+                    translate([0,0,-wire_drop-wire_thickness])mg90s_wire_stub();
+                    translate([-body_length,0,-wire_drop-wire_thickness])mg90s_wire_stub();
+                }
+            }
         }
     }
 }
@@ -96,11 +105,19 @@ module mg90s(a=0){
 
 
 // use with slice_height = -mg90s_wire_pos()[2] to include wire
-module mg90s_section(clearance=0.1, slice_height=0) {
+module mg90s_section(clearance=0.1, slice_height=0, use_hull=false) {
     offset(r=clearance){
-        projection(cut=true){
-            translate([0,0,slice_height])
-            mg90s();
+        if(use_hull){
+            hull()projection(cut=true){
+                translate([0,0,slice_height])
+                mg90s();
+            }
+        }
+        if(!use_hull){
+            projection(cut=true){
+                translate([0,0,slice_height])
+                mg90s();
+            }
         }
     }
 }
