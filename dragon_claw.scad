@@ -11,7 +11,9 @@ n_claws = 5;
 
 
 
-shaft_comp=mg90s_shaft_pos()[2];
+finger_shaft_comp=-(mg90s_shaft_pos()[2] +finger_tail_bolt_len()/2);
+claw_shaft_comp=mg90s_shaft_pos()[2];
+claw_point_comp=-finger_tail_bolt_len()/2;
 
 
 //positions and orientations of the knuckle motors relative to the palm origin
@@ -24,7 +26,7 @@ knuckle_motor_pos = [
     ];
 
 knuckle_motor_range=[
-    [-12,45],
+    [-30,30],
     [-30,30],
     [-30,30],
     [-30,30],
@@ -34,27 +36,27 @@ knuckle_motor_range=[
 //positions and orientations of the finger motor shaft relative to the respective knuckle motor shaft
 
 finger_motor_pos = [
-    [[15,-shaft_comp,20],[90,130,0]],
-    [[10,-shaft_comp,26],[90,130,0]],
-    [[10,-shaft_comp,26],[90,130,0]],
-    [[10,-shaft_comp,26],[90,130,0]],
-    [[10,-shaft_comp,26],[90,130,0]],
+    [[15,finger_shaft_comp,20],[90,130,0]],
+    [[10,finger_shaft_comp,26],[90,130,0]],
+    [[10,finger_shaft_comp,26],[90,130,0]],
+    [[10,finger_shaft_comp,26],[90,130,0]],
+    [[10,finger_shaft_comp,26],[90,130,0]],
 ];
 
 claw_motor_pos = [
-    [[-38,10,shaft_comp],[0,0,-50]],
-    [[-36,10,shaft_comp],[0,0,-50]],
-    [[-40,10,shaft_comp],[0,0,-50]],
-    [[-36,10,shaft_comp],[0,0,-50]],
-    [[-32,10,shaft_comp],[0,0,-50]],
+    [[-38,10,claw_shaft_comp],[0,0,-50]],
+    [[-36,10,claw_shaft_comp],[0,0,-50]],
+    [[-40,10,claw_shaft_comp],[0,0,-50]],
+    [[-36,10,claw_shaft_comp],[0,0,-50]],
+    [[-32,10,claw_shaft_comp],[0,0,-50]],
 ];
 
 claw_point_pos = [
-    [[-42,10,0],[0,0,0]],
-    [[-50,10,0],[0,0,0]],
-    [[-55,10,0],[0,0,0]],
-    [[-50,10,0],[0,0,0]],
-    [[-45,10,0],[0,0,0]],
+    [[-42,10,claw_point_comp],[0,0,0]],
+    [[-50,10,claw_point_comp],[0,0,0]],
+    [[-55,10,claw_point_comp],[0,0,0]],
+    [[-50,10,claw_point_comp],[0,0,0]],
+    [[-45,10,claw_point_comp],[0,0,0]],
 ];
 
 module assembly(pose = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]){
@@ -65,6 +67,10 @@ module assembly(pose = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]){
             color("gray")mg90s(a=pose[i][0]);    //knuckle motor
             translate(mg90s_shaft_pos()) rotate(v=mg90s_shaft_axis(), a=pose[i][0]){
                 // origin is knuckle shaft
+                knuckle_bearing_pos(i, finger_motor_pos,knuckle_motor_range){
+                    bearing();
+                    tail_spacer();
+                }
                 knuckle_part(i, finger_motor_pos,knuckle_motor_range);  // knuckle bracket
                 translate(finger_motor_pos[i][0]) rotate(finger_motor_pos[i][1]){
                     // origin is finger shaft
@@ -72,6 +78,10 @@ module assembly(pose = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]){
                         // origin is finger motor
                         color("gray")mg90s(a=pose[i][1]);    //finger motor
                         finger_part(i, claw_motor_pos); //finger shroud
+                        finger_bearing_pos(i, claw_motor_pos){
+                            bearing();
+                            tail_spacer();
+                        }
                         translate(claw_motor_pos[i][0]) rotate(claw_motor_pos[i][1]){
                             // origin is claw shaft
                             rotate(v=-mg90s_shaft_axis(), a=pose[i][2]) translate(-mg90s_shaft_pos()) {
@@ -158,22 +168,29 @@ function claw_kinematic_chains() = [ for(i=[0:n_claws-1])
 ];
 
 
+//layout of components
+module layout(){
+    palm_part(knuckle_motor_pos,knuckle_motor_range);
+    for(i=[0:n_claws-1]) translate([-100, 50 *i,0]) {
+        knuckle_part(i, finger_motor_pos,knuckle_motor_range);
+        //%translate(-mg90s_shaft_pos())mg90s();
+    }
+    for(i=[0:n_claws-1]) translate([-150, 50 *i,finger_tail_bolt_len()/2]){
+        finger_part(i, claw_motor_pos);
+        //%mg90s();
+    }
 
+    for(i=[0:n_claws-1]) translate([-250, 50 *i,finger_tail_bolt_len()/2]){
+        claw_part(i, claw_point_pos);
+        //%mg90s();
+    }
 
+}
+
+//layout();
 assembly([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
 //mg90s();
 //mg90s_wire_channel();
 
-/*
-for(i=[0:n_claws-1]) translate([-100, 50 *i,0]) {
-    knuckle_part(i, finger_motor_pos);
-    translate(-mg90s_shaft_pos())%mg90s();
-}
-*/
-/*
-//layout of components
-palm_part(knuckle_motor_pos);
-for(i=[0:n_claws-1]) translate([-150, 50 *i,0]) finger_part(i, claw_motor_pos);
-for(i=[0:n_claws-1]) translate([-250, 50 *i,0]) claw_part(i);
-*/
+
 
