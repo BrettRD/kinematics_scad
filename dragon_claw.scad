@@ -7,7 +7,8 @@ use <scad-utils/spline.scad>
 
 n_claws = 5;
 
-
+$fs=0.2;
+$fa=1;
 
 
 
@@ -187,10 +188,11 @@ module layout(){
 
 }
 
-//layout();
-assembly([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
+//render()layout();
+//assembly([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
 //mg90s();
 //mg90s_wire_channel();
 
+palm_part(knuckle_motor_pos,knuckle_motor_range);
 
 

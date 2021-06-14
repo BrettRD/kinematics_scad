@@ -85,10 +85,10 @@ module palm_part(knuckle_motor_pos, knuckle_range){
                     translate(wrist_pos)cylinder(d=wrist_dia); // extend hull into arm
                 }
             }
-            hull(){
-                translate(wrist_pos)cylinder(d=wrist_dia); // extend hull into arm
-                translate(arm_pos)cylinder(d=50); // extend hull into arm
-            }
+            //hull(){
+            //    translate(wrist_pos)cylinder(d=wrist_dia); // extend hull into arm
+            //    translate(arm_pos)cylinder(d=50); // extend hull into arm
+            //}
         }
 
         color("red")union(){
@@ -113,8 +113,12 @@ module palm_part(knuckle_motor_pos, knuckle_range){
                     // clearance for knuckle tail shafts
                     translate(mg90s_base_pos()+[mg90s_shaft_pos()[0],0,0]) {
                         // shaft proper
-                        translate([0,0,-(servo_tail_thickness + rear_flange+rear_flange_bush + 2*mg90s_shaft_len())])
+                        translate([0,0,-(servo_tail_thickness + rear_flange+rear_flange_bush + 2*mg90s_shaft_len())]){
+                            //shaft as required
                             cylinder(d=servo_tail_shaft_dia_int,h=rear_flange+rear_flange_bush + 2*mg90s_shaft_len());
+                            //shaft extended to allow cleaning the print
+                            cylinder(d=servo_tail_shaft_dia_int,h=30+rear_flange+rear_flange_bush + 2*mg90s_shaft_len());
+                        }
                         // rocking clearance
                         hull(){
                             translate([0,0,-(servo_tail_thickness + rear_flange + rear_flange_bush + mg90s_shaft_len())])
@@ -137,11 +141,12 @@ module palm_part(knuckle_motor_pos, knuckle_range){
                 hull(){
                     translate(mot[0]) rotate(mot[1]) {
                         translate(mg90s_base_pos()+[-5,0,0]){
-                            linear_extrude(height=1)square([10,10], center=true);
+                            //linear_extrude(height=1)square([10,10], center=true);
+                            linear_extrude(height=1)rotate(45)square([7,7], center=true);
                         }
                     }
                     // XXX duplicated cylinder
-                    translate(wrist_pos)cylinder(d=30); // extend hull into arm
+                    translate(wrist_pos)cylinder(d=40); // extend hull into arm
                 }
                 //finger and claw wires
                 hull(){
@@ -151,14 +156,14 @@ module palm_part(knuckle_motor_pos, knuckle_range){
                         }
                     }
                     // XXX duplicated cylinder
-                    translate(wrist_pos)cylinder(d=30); // extend hull into arm
+                    translate(wrist_pos)cylinder(d=20); // extend hull into arm
                 }
             }
-            hull(){
-                // XXX duplicated cylinder
-                translate(wrist_pos)cylinder(d=30); // extend hull into arm
-                translate(arm_pos + [0,0,-1])cylinder(d=30); // extend hull into arm
-            }
+            //hull(){
+            //    // XXX duplicated cylinder
+            //    translate(wrist_pos)cylinder(d=30); // extend hull into arm
+            //    translate(arm_pos + [0,0,-1])cylinder(d=30); // extend hull into arm
+            //}
         }
     }
 }
