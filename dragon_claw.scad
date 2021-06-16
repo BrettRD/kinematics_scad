@@ -193,6 +193,7 @@ module layout(){
 //mg90s();
 //mg90s_wire_channel();
 
-palm_part(knuckle_motor_pos,knuckle_motor_range);
-
-
+//palm_part(knuckle_motor_pos,knuckle_motor_range);
+//knuckle_part(0, finger_motor_pos,knuckle_motor_range);
+//finger_part(0, claw_motor_pos);
+//claw_part(0, claw_point_pos);

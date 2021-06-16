@@ -4,7 +4,7 @@ servo_bolt_depth=10;
 servo_bolt_dia=1.6;
 
 
-bolt_len=mg90s_shaft_len()+3; //not the true bolt length, the thread does not reach the bottom of the shaft.
+bolt_len=mg90s_shaft_len()+1; //not the true bolt length, the thread does not reach the bottom of the shaft.
 bolt_head_len=30;
 rear_flange=5;
 rear_flange_bush=0.5;
@@ -26,7 +26,7 @@ motor_socket_clear_dia=28;
 motor_socket_clear_dia_neck=20;
 
 spline_mate_dia=15;
-spline_mate_len=6;
+spline_mate_len=bolt_len;
 spline_mate_top_dia=12;
 
 bearing_len=4;
@@ -236,7 +236,7 @@ module knuckle_part(i, finger_motor_pos, knuckle_range){
 
             // mate to knuckle servo spline
             translate([0,0,bolt_len])cylinder(d=7, h=bolt_head_len);//through-bolt head for spline
-            cylinder(d=3.2, h=bolt_len+bolt_head_len);//through-bolt for spline
+            cylinder(d=mg90s_shaft_bolt_dia(), h=bolt_len+bolt_head_len);//through-bolt for spline
             spline_shaft();
 
             // palm motor negative space
@@ -245,7 +245,7 @@ module knuckle_part(i, finger_motor_pos, knuckle_range){
                     clear_len = mg90s_shaft_len() + mg90s_shaft_pos()[2]-mg90s_base_pos()[2] + servo_tail_thickness,
                     rad=mg90s_shaft_len()
                 ) translate([0,0,-clear_len/2]) 
-                    rotate([90,0,0])linear_extrude(height=50, center=true)hull()for(x=[-1,1])for(y=[-1,1])
+                    rotate([90,0,0])linear_extrude(height=1000, center=true)hull()for(x=[-1,1])for(y=[-1,1])
                         translate([x*(13-rad), y*(clear_len/2-rad)])
                             circle(r=rad);
                     
@@ -256,7 +256,7 @@ module knuckle_part(i, finger_motor_pos, knuckle_range){
             translate(finger_motor_pos[i][0]) rotate(finger_motor_pos[i][1]) {
                 spline_shaft();
                 translate([0,0,bolt_len])cylinder(d=7, h=bolt_head_len);//through-bolt head for spline
-                cylinder(d=3.2, h=bolt_len+bolt_head_len);//through-bolt for spline
+                cylinder(d=mg90s_shaft_bolt_dia(), h=bolt_len+bolt_head_len);//through-bolt for spline
             }
 
             //clearance for finger servo body
@@ -350,7 +350,7 @@ module finger_part(i, claw_motor_pos){
             translate(claw_motor_pos[i][0]) rotate(claw_motor_pos[i][1]) {
                 spline_shaft();
                 translate([0,0,bolt_len])cylinder(d=7, h=bolt_head_len);//through-bolt head for spline
-                cylinder(d=3.2, h=bolt_len+bolt_head_len);//through-bolt for spline
+                cylinder(d=mg90s_shaft_bolt_dia(), h=bolt_len+bolt_head_len);//through-bolt for spline
             }
             //clearance for claw servo body
             translate(claw_motor_pos[i][0]) rotate(claw_motor_pos[i][1]) rotate([180,0,0]){

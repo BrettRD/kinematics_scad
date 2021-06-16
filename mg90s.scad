@@ -2,7 +2,7 @@
 
 
 
-body_dims = [22.5,12.3,22.5];
+body_dims = [22.8,12.3,22.5];
 body_length = body_dims[0];
 body_width = body_dims[1];
 body_height = body_dims[2];
@@ -29,10 +29,16 @@ wire_thickness = 1.3;
 wire_width=4;
 wire_len=wire_thickness;
 
-mg90s_spline_r1=4.2 /2;
-mg90s_spline_r2=4.7 /2;
+//mg90s_spline_r1=4.2 /2;
+//mg90s_spline_r2=4.7 /2;
+// tested against an actual shaft
+mg90s_spline_r1 = (4.2 /2) +0.1*(1-6);
+mg90s_spline_r2 = (4.7 /2) +0.1*(1+6);
+
 mg90s_spline_n=20;
 mg90s_spline_h=5;
+//Actully M2.5, not M3 or M2.
+mg90s_spline_bolt_dia = 2.5;
 
 
 
@@ -44,7 +50,7 @@ module spline_sect(r1=mg90s_spline_r1, r2=mg90s_spline_r2, n=mg90s_spline_n){
 }
 
 module spline_shaft(r1=mg90s_spline_r1, r2=mg90s_spline_r2, n=mg90s_spline_n, h=mg90s_spline_h){
-    linear_extrude(height = h) spline_sect(r1,r2,n);
+    translate([0,0,-0.01])linear_extrude(height = h) spline_sect(r1,r2,n);
     translate([0,0,mg90s_spline_h-shaft_len])cylinder(r=r1, h=shaft_len-mg90s_spline_h);
 }
 
@@ -52,6 +58,7 @@ module spline_shaft(r1=mg90s_spline_r1, r2=mg90s_spline_r2, n=mg90s_spline_n, h=
 function mg90s_shaft_pos() = [(body_length-body_width)/2,0,body_height/2 + gear_drop + shaft_len - mg90s_spline_h];
 function mg90s_shaft_axis() = [0,0,1];
 function mg90s_shaft_len() = shaft_len;
+function mg90s_shaft_bolt_dia(clearance = 0.2) = mg90s_spline_bolt_dia + clearance;
 
 function mg90s_bolt_top_pos() = [for(mirr=[1,-1]) [mirr * wing_bolt_spacing/2, 0, body_height/2-wing_drop]];
 function mg90s_bolt_bottom_pos() = [for(pos = mg90s_bolt_top_pos()) pos - [0,0,wing_thick] ];
@@ -124,9 +131,21 @@ module mg90s_section(clearance=0.1, slice_height=0, use_hull=false) {
 
 
 
-mg90s();
+//mg90s();
+/*
+$fs=0.1;
+spacing=7;
+difference(){
+    translate([0,-spacing*3,0])cube([50,50,4],center=true);
+    for(x=[-3:3])for(y=[-6:0])
+    {
+        translate(7*[x,y,0])
+        {
+            spline_shaft(r1=mg90s_spline_r1 +0.1*(x+y), r2=mg90s_spline_r2+0.1*(x-y));
+            translate([0,0,-3])cylinder(d=3.2,h=3);
+        }
+    }
+}
+*/
 
-
-
-
-
+spline_shaft();
