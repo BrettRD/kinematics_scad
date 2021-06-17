@@ -194,6 +194,31 @@ module layout(){
 //mg90s_wire_channel();
 
 //palm_part(knuckle_motor_pos,knuckle_motor_range);
-//knuckle_part(0, finger_motor_pos,knuckle_motor_range);
-//finger_part(0, claw_motor_pos);
-//claw_part(0, claw_point_pos);
+i=4;
+//knuckle_part(i, finger_motor_pos,knuckle_motor_range);
+//finger_part(i, claw_motor_pos);
+claw_part(i, claw_point_pos);
+
+//tail_spacer();
+
+
+//check for collisions
+/*
+intersection(){
+    i=1;
+    pose = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]];
+    //finger_part(i, claw_motor_pos); //finger shroud
+    finger_bearing_pos(i, claw_motor_pos){
+        //bearing();
+        tail_spacer();
+    }
+    translate(claw_motor_pos[i][0]) rotate(claw_motor_pos[i][1]){
+        // origin is claw shaft
+        rotate(v=-mg90s_shaft_axis(), a=pose[i][2]) translate(-mg90s_shaft_pos()) {
+            // origin is claw motor
+            //color("gray")mg90s(a=pose[i][2]);  //claw motor
+            claw_part(i, claw_point_pos);   //pointy bit
+        }
+    }
+}
+*/
