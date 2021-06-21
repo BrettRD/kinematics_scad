@@ -84,7 +84,7 @@ module palm_part(knuckle_motor_pos, knuckle_range){
         union(){
             for(i=[0:len(knuckle_motor_pos)-1])let(mot=knuckle_motor_pos[i]){
                 hull(){
-                    translate(mot[0])  rotate(mot[1]) translate(-mg90s_body_center_pos()){
+                    translate(mot[0])  rotate(mot[1]){
                         // house body of servo
                         translate(mg90s_base_pos()-[0,0,servo_tail_thickness+rear_flange+rear_flange_bush+2*mg90s_shaft_len()])
                             linear_extrude(height=servo_tail_thickness+rear_flange+rear_flange_bush+2*mg90s_shaft_len() + mg90s_bolt_top_pos()[0][2]-mg90s_base_center_pos()[2])
@@ -106,7 +106,7 @@ module palm_part(knuckle_motor_pos, knuckle_range){
         color("red")union(){
             // palm negative space
             for(i=[0:len(knuckle_motor_pos)-1])let(mot=knuckle_motor_pos[i]){
-                translate(mot[0]) rotate(mot[1]) translate(-mg90s_body_center_pos()){
+                translate(mot[0]) rotate(mot[1]){
 
                     //mg90s();
                     translate(mg90s_base_pos()) linear_extrude(height=40) mg90s_section();
@@ -151,7 +151,7 @@ module palm_part(knuckle_motor_pos, knuckle_range){
             for(mot=knuckle_motor_pos){
                 //knuckle motor wires
                 hull(){
-                    translate(mot[0]) rotate(mot[1]) translate(-mg90s_body_center_pos()){
+                    translate(mot[0]) rotate(mot[1]){
                         translate(mg90s_base_center_pos()+[-5,0,0]){
                             //linear_extrude(height=1)square([10,10], center=true);
                             linear_extrude(height=1)rotate(45)square([7,7], center=true);
@@ -162,7 +162,7 @@ module palm_part(knuckle_motor_pos, knuckle_range){
                 }
                 //finger and claw wires
                 hull(){
-                    translate(mot[0]) rotate(mot[1]) translate(-mg90s_body_center_pos()){
+                    translate(mot[0]) rotate(mot[1]){
                         translate([-19+mg90s_body_center_pos()[0],0,(mg90s_bolt_top_pos()[0])[2]]){
                             rotate([90,0,0])cylinder(d=4, h=8, center=true);
                         }

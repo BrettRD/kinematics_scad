@@ -15,11 +15,11 @@ n_claws = 5;
 
 //positions and orientations of the knuckle motor bodies relative to the palm origin
 knuckle_motor_pos = [
-    [[ 30,-50,-5], [0, -65, 110]],
-    [[ 50, 10,-5], [0, -75, 205]],
-    [[ 20, 35,-10], [0, -90, 250]],
-    [[-20, 35,-5], [0, -80, 290]],
-    [[-50, 5, 0], [0, -65, 335]]
+    [[34.6192, -62.6912, 7.09054], [0, -65, 110]],
+    [[63.9572, 16.5083, 4.56162], [0, -75, 205]],
+    [[25.934, 51.3037, -4.75], [0, -90, 250]],
+    [[-25.5321, 50.1993, 3.18304], [0, -80, 290]],
+    [[-62.2403, 10.7078, 12.0905], [0, -65, 335]]
     ];
 
 //range of the knuckle motors
@@ -58,10 +58,21 @@ claw_point_pos = [
     [[-50.25,10,0],[0,0,0]],
 ];
 
+
+for(i=[0:n_claws-1]){
+    echo([0,0,0] + 
+        translation(knuckle_motor_pos[i][0]) *
+        rotation(knuckle_motor_pos[i][1]) *
+        translation(-mg90s_body_center_pos()) *
+        [0,0,0,1]
+    );
+}
+
+
 module assembly(pose = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]){
     palm_part(knuckle_motor_pos,knuckle_motor_range);
     for(i=[0:n_claws-1]){
-        translate(knuckle_motor_pos[i][0]) rotate(knuckle_motor_pos[i][1]) translate(-mg90s_body_center_pos()){
+        translate(knuckle_motor_pos[i][0]) rotate(knuckle_motor_pos[i][1]){
             // origin is knuckle motor origin
             color("gray")mg90s(a=pose[i][0]);    //knuckle motor
             translate(mg90s_shaft_pos()) rotate(v=mg90s_shaft_axis(), a=pose[i][0]){
@@ -110,7 +121,6 @@ module fk_native(
 ){
     translate(knuckle_motor_pos[i][0])
     rotate(knuckle_motor_pos[i][1])
-    translate(-mg90s_body_center_pos())
     translate(mg90s_shaft_pos())
     rotate(v=mg90s_shaft_axis(), a=pose[0])
     translate(finger_motor_pos[i][0])
@@ -142,8 +152,7 @@ function claw_kinematic_chains() = [ for(i=[0:n_claws-1])
         //links
         [
             translation(knuckle_motor_pos[i][0]) *
-            rotation(knuckle_motor_pos[i][1]) *
-            translation(-mg90s_body_center_pos()),
+            rotation(knuckle_motor_pos[i][1]),
             //rotation with pose[0] gets inserted here
             translation(finger_motor_pos[i][0])*
             rotation(finger_motor_pos[i][1]),
