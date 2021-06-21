@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<robot name="visual">
+
+  <xacro:property name="openscad_params_file" value="$(find claw)/dragon_claw.json" />
+  <xacro:property name="openscad_params" value="${load_yaml(openscad_params_file)}"/>
+
+
+
+  <link name="palm">
+    <visual>
+      <geometry>
+        <mesh filename="package://claw/stl/dragon_claw_palm.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+
+
+  <xacro:macro name="finger" params="digit ">
+
+    <link name="knuckle_${digit}">
+      <visual>
+        <geometry>
+          <mesh filename="package://claw/stl/dragon_claw_knuckle_${digit}.stl"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+      </visual>
+    </link>
+
+    <joint name="knuckle_servo_${digit}" type="fixed">
+      <parent link="palm"/>
+      <child link="knuckle_${digit}"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </joint>
+
+
+    <link name="finger_${digit}">
+      <visual>
+        <geometry>
+          <mesh filename="package://claw/stl/dragon_claw_finger_${digit}.stl"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+      </visual>
+    </link>
+
+    <joint name="finger_servo_${digit}" type="fixed">
+      <parent link="knuckle_${digit}"/>
+      <child link="finger_${digit}"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </joint>
+
+
+    <link name="claw_${digit}">
+      <visual>
+        <geometry>
+          <mesh filename="package://claw/stl/dragon_claw_claw_${digit}.stl"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+      </visual>
+    </link>
+
+    <joint name="claw_servo_${digit}" type="fixed">
+      <parent link="finger_${digit}"/>
+      <child link="claw_${digit}"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </joint>
+  </xacro:macro>
+
+
+  <xacro:finger digit="0"/>
+  <xacro:finger digit="1"/>
+  <xacro:finger digit="2"/>
+  <xacro:finger digit="3"/>
+  <xacro:finger digit="4"/>
+
+  </robot>
