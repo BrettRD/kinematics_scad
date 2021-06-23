@@ -12,6 +12,9 @@ $fa=1;
 n_claws = 5;
 
 
+//  these arrays are exported via customizer, but they are silently converted to string.
+//  the xacro parser can't convert the string back into an array, do that manually.
+//  as of 2021, There are bugs in parsing nested lists in customizer, so editing the json does not allow the model to be altered
 
 //positions and orientations of the knuckle motor bodies relative to the palm origin
 knuckle_motor_pos = [
